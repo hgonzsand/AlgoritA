@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>Algoritmo A*</title>
+    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/brython/3.10.5/brython.min.js"></script>
+</head>
+<body onload="brython()">
+    <h1>Algoritmo A* en GitHub Pages</h1>
+    <p>Presiona el botón para ejecutar A* en la web.</p>
+    <button onclick="run()">Ejecutar</button>
+    <pre id="output"></pre>
+
+    <script type="text/python">
+        from browser import document
+
+        def run():
+            # Grafo de ejemplo
+            grafo = {
+                'A': {'B': 1, 'C': 4},
+                'B': {'A': 1, 'C': 2, 'D': 5},
+                'C': {'A': 4, 'B': 2, 'D': 1},
+                'D': {'B': 5, 'C': 1}
+            }
+            heuristica = {'A': 3, 'B': 2, 'C': 1, 'D': 0}
+
+            def a_estrella(grafo, inicio, objetivo, heuristica):
+                from heapq import heappush, heappop
+                clase Nodo:
+                    def __init__(self, estado, padre=None, costo=0, heuristica=0):
+                        self.estado = estado
+                        self.padre = padre
+                        self.costo = costo
+                        self.heuristica = heuristica
+                        self.total = costo + heuristica
+
+                    def __lt__(self, otro):
+                        return self.total < otro.total
+
+                cola = []
+                heappush(cola, Nodo(inicio, costo=0, heuristica=heuristica[inicio]))
+                visitados = set()
+
+                while cola:
+                    nodo_actual = heappop(cola)
+
+                    if nodo_actual.estado in visitados:
+                        continue
+                    visitados.add(nodo_actual.estado)
+
+                    if nodo_actual.estado == objetivo:
+                        camino = []
+                        while nodo_actual:
+                            camino.append(nodo_actual.estado)
+                            nodo_actual = nodo_actual.padre
+                        return camino[::-1]
+
+                    for vecino, costo in grafo[nodo_actual.estado].items():
+                        if vecino not in visitados:
+                            heappush(cola, Nodo(vecino, nodo_actual, nodo_actual.costo + costo, heuristica[vecino]))
+
+                return None
+
+            camino = a_estrella(grafo, 'A', 'D', heuristica)
+            document["output"].text = "Camino más corto: " + str(camino)
+
+    </script>
+</body>
+</html>
